@@ -26,7 +26,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
+@app.get("/health")
 def health_check() -> dict:
     return {"status": "healthy", "message": "Habityu API is running."}
 
