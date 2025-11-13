@@ -8,7 +8,7 @@ A full-stack habit tracking web application built with FastAPI backend and React
 
 ## Features
 
-- **Habit Management:** Create, update, delete, and track habits with customizable types (checkbox/measurable)
+- **Habit Management:** Create, update, delete, and track habits with customizable types (simple/measurable)
 - **Progress Tracking:** Visual heatmaps, charts, and statistics for habit completion
 - **Streak Tracking:** Current and longest streak calculation
 - **AI-Powered Quotes:** Personalized motivational quotes based on your habits
@@ -151,7 +151,7 @@ http://localhost:8000/api
 ```json
 {
   "name": "Morning Workout",
-  "type": "checkbox",
+  "type": "simple",
   "color": "#FF5733",
   "target": null,
   "unit": null
@@ -173,8 +173,7 @@ http://localhost:8000/api
 {
   "habit_id": 1,
   "date": "2025-11-13",
-  "value": 1.0,
-  "is_completed": true
+  "value": 1.0
 }
 ```
 
@@ -188,9 +187,15 @@ http://localhost:8000/api
 | GET | `/api/insights/{habit_id}/chart` | Get habit chart data (to build a dot line chart of avg completion percentage) | 60/min |
 | GET | `/api/insights/{habit_id}/heatmap` | Get habit heatmap data (to track per habit per day progress)                  | 60/min |
 
+**GET `/api/insights/overall/week` Query Parameters:**
+- `today_date`: Date (format: YYYY-MM-DD)
+
 **GET `/api/insights/overall/calendar` Query Parameters:**
 - `start_date`: Date (format: YYYY-MM-DD)
 - `end_date`: Date (format: YYYY-MM-DD)
+
+**GET `/api/insights/{habit_id}/stats` Query Parameters:**
+- `today_date`: Date (format: YYYY-MM-DD)
 
 **GET `/api/insights/{habit_id}/chart` Query Parameters:**
 - `start_date`: Date (format: YYYY-MM-DD)
@@ -206,6 +211,9 @@ http://localhost:8000/api
 | Method | Endpoint | Description                                                           | Rate Limit |
 |--------|----------|-----------------------------------------------------------------------|------------|
 | GET | `/api/quote` | Get personalized AI-generated motivational quotes according to habits | 10/min |
+
+**GET `/api/export/pdf` Query Parameters:**
+- `today_date`: Date (format: YYYY-MM-DD)
 
 **Response:**
 ```json
