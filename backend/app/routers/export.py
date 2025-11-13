@@ -13,13 +13,13 @@ router = APIRouter(
 
 @router.get("/pdf")
 @global_rate_limiter.limit("10/minute")
-def export_pdf_report(request: Request, db: Session = Depends(get_db_session)):
-    pdf = create_full_report(db)
+def export_pdf_report(request: Request, today_date: date, db: Session = Depends(get_db_session)):
+    pdf = create_full_report(db, today_date)
 
     return StreamingResponse(
         [pdf],
         media_type="application/pdf",
         headers={
-            "Content-Disposition": f"attachment; filename=habit_insights_report_{date.today()}.pdf"
+            "Content-Disposition": f"attachment; filename=habit_insights_report_{today_date}.pdf"
         }
     )

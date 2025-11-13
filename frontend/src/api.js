@@ -7,6 +7,10 @@ const apiClient = axios.create({
   baseURL: BASE_URL,
 })
 
+const getTodayDate = () => {
+  return new Date().toLocaleDateString('en-CA');
+}
+
 const getStartDate = (daysAgo) => {
   return formatISO(new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000), {
     representation: 'date',
@@ -17,12 +21,12 @@ const getEndDate = () => {
   return formatISO(new Date(), { representation: 'date' })
 }
 
-
-
 export const fetchQuote = () => apiClient.get('/quote')
 
 export const fetchSidebarWeekInsights = () =>
-  apiClient.get('/insights/overall/week')
+  apiClient.get('/insights/overall/week', {
+    params: { today_date: getTodayDate() }
+  })
 
 export const fetchSidebarCalendarInsights = (startDate, endDate) => {
   const params = {
@@ -48,7 +52,9 @@ export const updateHabit = (habitId, data) => apiClient.put(`/habits/${habitId}`
 
 export const deleteHabit = (habitId) => apiClient.delete(`/habits/${habitId}`)
 
-export const fetchHabitStats = (habitId) => apiClient.get(`/insights/${habitId}/stats`)
+export const fetchHabitStats = (habitId) => apiClient.get(`/insights/${habitId}/stats`, {
+    params: { today_date: getTodayDate() }
+})
 
 export const fetchHabitChart = (habitId, view, startDate, endDate) => {
   const params = {
@@ -70,6 +76,9 @@ export const fetchHabitHeatmap = (habitId, startDate, endDate) => {
 export const exportPdfReport = () => {
   return apiClient.get('/export/pdf', {
     responseType: 'blob',
+    params: {
+        today_date: getTodayDate()
+    }
   })
 }
 

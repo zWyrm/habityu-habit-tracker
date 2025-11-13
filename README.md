@@ -32,9 +32,14 @@ OPENROUTER_API_KEY=your_openrouter_api_key_here
 OPENROUTER_MODEL=your_model_name
 OPENROUTER_URL=https://openrouter.ai/api/v1/chat/completions
 
-VITE_API_BASE_URL=https://your-backend-domain.com
 FRONTEND_URL=https://your-frontend-domain.com
 LOCAL_CORS_ORIGIN=http://localhost:5173
+```
+
+Create a `.env` file in the frontend root directory with the following variables:
+
+```env
+VITE_API_BASE_URL=https://your-backend-domain.com
 ```
 
 ### Environment Variable Descriptions

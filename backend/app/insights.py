@@ -15,7 +15,7 @@ def _get_habit_completion_percentage():
         else_=0.0
     )
 
-def _calculate_streaks(db: Session, completed_dates) -> tuple[int, int]:
+def _calculate_streaks(db: Session, today_date: date, completed_dates) -> tuple[int, int]:
     streak_groups = select(
         column("date"),
         (func.julianday(column("date")) - func.row_number().over(order_by=column("date"))).label("streak_group_id")
@@ -32,7 +32,7 @@ def _calculate_streaks(db: Session, completed_dates) -> tuple[int, int]:
         column("streak_group_id")
     ).cte("streak_data")
 
-    today = date.today()
+    today = today_date
     yesterday = today - timedelta(days=1)
 
     final_query = select(
@@ -49,7 +49,7 @@ def _calculate_streaks(db: Session, completed_dates) -> tuple[int, int]:
     return result.current_streak or 0, result.max_streak or 0
 
 
-def _get_habit_streaks(db: Session, habit_id: int) -> tuple[int, int]:
+def _get_habit_streaks(db: Session, habit_id: int, today_date: date) -> tuple[int, int]:
     completed_dates = select(
         models.HabitEntry.date.label("date")
     ).filter(
@@ -57,17 +57,17 @@ def _get_habit_streaks(db: Session, habit_id: int) -> tuple[int, int]:
         models.HabitEntry.is_completed == True
     ).cte("completed_dates")
 
-    return _calculate_streaks(db, completed_dates)
+    return _calculate_streaks(db, today_date, completed_dates)
 
 
-def _get_overall_streaks(db: Session) -> tuple[int, int]:
+def _get_overall_streaks(db: Session, today_date: date,) -> tuple[int, int]:
     completed_dates = select(
         models.HabitEntry.date.distinct().label("date")
     ).filter(
         models.HabitEntry.is_completed == True
     ).cte("completed_dates")
 
-    return _calculate_streaks(db, completed_dates)
+    return _calculate_streaks(db, today_date, completed_dates)
 
 
 def _get_calendar_stats(db: Session, total_habits: int, start_date: date, end_date: date) -> List[schemas.SingleCalendarDayStat]:
@@ -164,11 +164,11 @@ def _get_monthly_chart_data(db: Session, habit_id: int, start_date: date, end_da
     return chart_data
 
 
-def get_sidebar_week_insights(db: Session) -> schemas.SidebarWeekInsights:
+def get_sidebar_week_insights(db: Session, today_date: date) -> schemas.SidebarWeekInsights:
     try:
-        today = date.today()
+        today = today_date
 
-        current_overall_streak, longest_overall_streak = _get_overall_streaks(db)
+        current_overall_streak, longest_overall_streak = _get_overall_streaks(db, today)
 
         start_of_week = today - timedelta(days=today.weekday())
 
@@ -238,9 +238,10 @@ def get_sidebar_calendar_insights(
 def get_habit_streaks_and_total_completions(
         db: Session,
         habit_id: int,
+        today_date: date
 ) -> schemas.HabitStats:
     try:
-        current_streak, max_streak = _get_habit_streaks(db, habit_id)
+        current_streak, max_streak = _get_habit_streaks(db, habit_id, today_date)
 
         total_completions_query = select(
             func.count(models.HabitEntry.date)
@@ -275,7 +276,10 @@ def get_habit_chart_data(
 
         return schemas.HabitChart(view=view, data=chart_data)
 
-    except SQLAlchemyError:
+
+    except Exception as e:
+
+        print(f"Error in get_habit_chart_data: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch habit chart data")
 
 

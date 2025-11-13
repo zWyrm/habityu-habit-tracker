@@ -18,9 +18,10 @@ router = APIRouter(
 @global_rate_limiter.limit("60/minute")
 def get_sidebar_week_insights(
     request: Request,
+    today_date: date,
     db: Session = Depends(get_db_session)
 ):
-    return insights.get_sidebar_week_insights(db=db)
+    return insights.get_sidebar_week_insights(db=db, today_date=today_date)
 
 @router.get(
     "/overall/calendar",
@@ -47,9 +48,10 @@ def get_sidebar_calendar_insights(
 def get_habit_stats(
     request: Request,
     habit_id: int,
+    today_date: date,
     db: Session = Depends(get_db_session)
 ):
-    return insights.get_habit_streaks_and_total_completions(db=db, habit_id=habit_id)
+    return insights.get_habit_streaks_and_total_completions(db=db, habit_id=habit_id, today_date=today_date)
 
 
 @router.get(

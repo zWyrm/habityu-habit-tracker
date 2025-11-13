@@ -21,8 +21,8 @@ def _get_formated_date(d: date) -> str:
     return f"{day}{suffix} {d.strftime('%B %Y')}"
 
 
-def _build_habit_table(db: Session):
-    today = date.today()
+def _build_habit_table(db: Session, today_date: date) -> Table:
+    today = today_date
     dates = [today - timedelta(days=i) for i in range(7)]
     date_labels = ["Today", "Yesterday"] + [(today - timedelta(days=i)).strftime("%a") for i in range(2, 7)]
 
@@ -56,7 +56,7 @@ def _build_habit_table(db: Session):
     return table
 
 
-def create_full_report(db: Session):
+def create_full_report(db: Session, today_date: date) -> Table:
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(
         buffer,
@@ -71,15 +71,15 @@ def create_full_report(db: Session):
     content = []
 
     try:
-        content.append(Paragraph(f"Habit Insights Report - {_get_formated_date(date.today())}", styles['h1']))
+        content.append(Paragraph(f"Habit Insights Report - {_get_formated_date(today_date)}", styles['h1']))
 
-        sidebar_data = insights.get_sidebar_week_insights(db)
+        sidebar_data = insights.get_sidebar_week_insights(db, today_date)
         content.append(Paragraph("Overall Statistics", styles['h2']))
         content.append(Paragraph(f"<b>Current Streak:</b> {sidebar_data.current_overall_streak} days"))
         content.append(Paragraph(f"<b>Longest Streak:</b> {sidebar_data.longest_overall_streak} days"))
 
         content.append(Paragraph("Past 7-Day Status", styles['h2']))
-        table = _build_habit_table(db)
+        table = _build_habit_table(db, today_date)
         if table is not None:
             content.append(table)
         else:
