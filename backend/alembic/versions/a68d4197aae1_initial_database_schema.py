@@ -27,7 +27,7 @@ def upgrade() -> None:
     sa.Column('created_date', sa.Date(), nullable=False),
     sa.Column('type', sa.Enum('simple', 'measurable', name='habittype'), nullable=False),
     sa.Column('color', sa.String(), nullable=True),
-    sa.Column('target', sa.Integer(), nullable=True),
+    sa.Column('target', sa.Float(), nullable=True),
     sa.Column('unit', sa.String(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )

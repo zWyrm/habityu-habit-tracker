@@ -4,11 +4,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from slowapi.errors import RateLimitExceeded
 
 from backend.app.routers import entries, export, habits, insights, quote
-
+from backend.app.config import FRONTEND_URL, LOCAL_CORS_ORIGIN
 app = FastAPI(
     title="Habityu",
     docs_url = None,
-    redoc_url = None
 )
 
 @app.exception_handler(RateLimitExceeded)
@@ -18,9 +17,11 @@ async def handle_rate_limit(request: Request, exc: RateLimitExceeded):
         content={"detail": f"Rate limit exceeded: {exc.detail}"}
     )
 
+ALLOWED_ORIGINS = [FRONTEND_URL] if FRONTEND_URL else [LOCAL_CORS_ORIGIN]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -13,3 +13,9 @@
 
 ## Frontend:
 
+### Used AI for (due to time constraints):
+- integrating Chakra UI components in the entire frontend
+
+### Did NOT use AI for:
+- designing any part of the page or its layout
+- designing the user flow

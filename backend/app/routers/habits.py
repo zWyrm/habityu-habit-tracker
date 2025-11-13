@@ -20,12 +20,6 @@ def create_habit(
 ):
     return crud.create_habit(db=db, habit=habit)
 
-
-@router.get("", response_model=List[schemas.GetHabit])
-@global_rate_limiter.limit("60/minute")
-def get_all_habits(request: Request, db: Session = Depends(get_db_session)):
-    return crud.get_all_habits(db=db)
-
 @router.get("/grid", response_model=List[schemas.HabitTable])
 @global_rate_limiter.limit("60/minute")
 def get_habit_table(

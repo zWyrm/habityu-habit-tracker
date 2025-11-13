@@ -103,9 +103,11 @@ def _get_weekly_chart_data(db: Session, habit_id: int, start_date: date, end_dat
         models.HabitEntry.date >= start_date,
         models.HabitEntry.date <= end_date
     ).group_by(
-        literal_column("strftime('%G-%V', date)")
+        literal_column("strftime('%G', date)"),
+        literal_column("strftime('%V', date)")
     ).order_by(
-        literal_column("strftime('%G-%V', date)")
+        literal_column("strftime('%G', date)"),
+        literal_column("strftime('%V', date)")
     )
 
     weekly_chart_data = db.execute(weekly_chart_data_query)
@@ -134,9 +136,11 @@ def _get_monthly_chart_data(db: Session, habit_id: int, start_date: date, end_da
         models.HabitEntry.date >= start_date,
         models.HabitEntry.date <= end_date
     ).group_by(
-        literal_column("strftime('%Y-%m', date)")
+        literal_column("strftime('%Y', date)"),
+        literal_column("strftime('%m', date)")
     ).order_by(
-        literal_column("strftime('%Y-%m', date)")
+        literal_column("strftime('%Y', date)"),
+        literal_column("strftime('%m', date)")
     )
 
     monthly_chart_data = db.execute(monthly_chart_data_query)

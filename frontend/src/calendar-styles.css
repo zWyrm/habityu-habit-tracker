@@ -1,0 +1,68 @@
+.react-calendar {
+  width: 100%;
+  border: none;
+  font-family: inherit;
+}
+
+.react-calendar__tile {
+  position: relative;
+  border-radius: 50%;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+.react-calendar__tile--now {
+  background: none;
+  font-weight: bold;
+}
+
+.react-calendar__navigation button {
+  font-weight: bold;
+}
+
+.react-calendar__month-view__weekdays__weekday {
+  text-align: center;
+  font-weight: bold;
+  font-size: 0.75em;
+  text-transform: uppercase;
+}
+
+.react-calendar__month-view__weekdays__weekday abbr {
+  text-decoration: none !important;
+}
+
+.react-calendar-heatmap {
+  font-family: inherit;
+}
+
+.react-calendar-heatmap .color-empty {
+  fill: #ebedf0;
+}
+
+.react-calendar-heatmap .color-scale-1 {
+  fill: #ffe0b2;
+}
+
+.react-calendar-heatmap .color-scale-2 {
+  fill: #ffb74d;
+}
+
+.react-calendar-heatmap .color-scale-3 {
+  fill: #ff9800;
+}
+
+.react-calendar-heatmap .color-scale-4 {
+  fill: #f57c00;
+}
+
+.react-calendar-heatmap text.react-calendar-heatmap-month-label {
+    font-size: 0.4em !important;
+}
+
+.react-calendar-heatmap-weekday-label {
+    font-size: 0.4em !important;
+    fill: #555;
+}
