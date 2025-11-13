@@ -2,6 +2,10 @@
 
 A full-stack habit tracking web application built with FastAPI backend and React frontend, featuring: comprehensive analytics, AI-powered motivational quotes and more.
 
+# Previews
+![Main Page Preview](assets/main-page-preview.png)
+![Habit Insights Preview](assets/habit-insights-preview.png)
+
 ## Features
 
 - **Habit Management:** Create, update, delete, and track habits with customizable types (checkbox/measurable)
