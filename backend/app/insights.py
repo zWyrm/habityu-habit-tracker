@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func, case, and_, select, column, literal_column
 from sqlalchemy.exc import SQLAlchemyError
 from fastapi import HTTPException
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from typing import List
 
 from backend.app import models, schemas
@@ -95,26 +95,29 @@ def _get_calendar_stats(db: Session, total_habits: int, start_date: date, end_da
 
 def _get_weekly_chart_data(db: Session, habit_id: int, start_date: date, end_date: date):
     weekly_chart_data_query = select(
-        literal_column("strftime('%G', date)").label('year'),
-        literal_column("strftime('%V', date)").label('week'),
+        literal_column("strftime('%Y', date)").label('year'),
+        literal_column("strftime('%W', date)").label('week'),
         func.sum(case((models.HabitEntry.is_completed == 1, 1), else_=0)).label('days_completed')
     ).filter(
         models.HabitEntry.habit_id == habit_id,
         models.HabitEntry.date >= start_date,
         models.HabitEntry.date <= end_date
     ).group_by(
-        literal_column("strftime('%G', date)"),
-        literal_column("strftime('%V', date)")
+        literal_column("strftime('%Y', date)"),
+        literal_column("strftime('%W', date)")
+    ).having(
+        literal_column("strftime('%Y', date)").is_not(None),
+        literal_column("strftime('%W', date)").is_not(None)
     ).order_by(
-        literal_column("strftime('%G', date)"),
-        literal_column("strftime('%V', date)")
+        literal_column("strftime('%Y', date)"),
+        literal_column("strftime('%W', date)")
     )
 
     weekly_chart_data = db.execute(weekly_chart_data_query)
 
     chart_data = []
     for year, week, days_completed in weekly_chart_data:
-        week_start = max(date.fromisocalendar(int(year), int(week), 1), start_date)
+        week_start = max(datetime.strptime(f'{year}-{week}-1', '%Y-%W-%w').date(), start_date)
         week_end = min(week_start + timedelta(days=6), end_date)
         total_possible = (week_end - week_start).days + 1
         if total_possible > 0:
@@ -138,6 +141,9 @@ def _get_monthly_chart_data(db: Session, habit_id: int, start_date: date, end_da
     ).group_by(
         literal_column("strftime('%Y', date)"),
         literal_column("strftime('%m', date)")
+    ).having(
+        literal_column("strftime('%Y', date)").is_not(None),
+        literal_column("strftime('%m', date)").is_not(None)
     ).order_by(
         literal_column("strftime('%Y', date)"),
         literal_column("strftime('%m', date)")
@@ -277,9 +283,9 @@ def get_habit_chart_data(
         return schemas.HabitChart(view=view, data=chart_data)
 
 
-    except Exception as e:
+    except Exception:
 
-        print(f"Error in get_habit_chart_data: {e}")
+        #print(f"Error in get_habit_chart_data: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch habit chart data")
 
 
